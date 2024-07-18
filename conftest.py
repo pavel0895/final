@@ -8,6 +8,7 @@ from selenium.webdriver.firefox.options import Options as FireFoxOptions
 from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
+from config import API_KEY
 
 
 
@@ -23,6 +24,33 @@ def pytest_addoption(parser):
     parser.addoption("--video", action="store_true", help="Enable video")
     parser.addoption("--bv", action="store", default=None, help="Browser version")
     #parser.addoption("--selenium-manager", action="store_true", help="Use Selenium Manager for driver management")
+
+
+@pytest.fixture
+def company_data():
+    """Фикстура для получения данных о первой компании"""
+    companies = get_companies()
+    assert isinstance(companies, list), 'Response should be a list'
+    assert len(companies) > 0, 'Company list should not be empty'
+
+    company = companies[0]
+    return {
+        'id': company['id']
+    }
+@pytest.fixture
+def contractor_data(company_data):
+    """Фикстура для получения данных о первом контрагенте компании"""
+    company_id = company_data['id']
+    response = get_contractors(company_id, api_key=API_KEY)
+    contractors = response.json()
+    assert isinstance(contractors, list), 'Response should be a list'
+    assert len(contractors) > 0, 'Contractor list should not be empty'
+
+    contractor = contractors[0]
+    return {
+        'id': contractor['id'],
+        'group_id': contractor['group_id']
+    }
 
 @pytest.fixture()
 def browser(request):
