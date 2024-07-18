@@ -22,7 +22,7 @@ class AddNewProductAdminSection(BasePage):
         self.logger = browser.logger
 
     @allure.step("Вводим название продукта")
-    def input_product_name(self, product_name, USERNAME_INPUT):
+    def input_product_name(self, product_name):
         try:
             self.logger.info("Input product name")
             self.get_element(self.USERNAME_INPUT).send_keys(product_name)
